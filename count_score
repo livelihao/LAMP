@@ -1,0 +1,69 @@
+# coding: utf-8
+import pandas as pd
+import os
+dic = {
+    "分布式系统理论":2,
+    "中国特色社会主义理论与实践研究":2,
+    "自然辩证法概论":1,
+    "基础外语（翻译基础）":1.5,
+    "基础外语（跨文化交际）":1.5,
+    "基础英语（翻译基础）":1.5,
+    "基础英语（跨文化交际）":1.5,
+    "高级口语":1,
+    "专业外语":1,
+    "知识产权与信息检索":1,
+    "应用统计":3,
+    "云计算技术":2,
+    "面向对象技术":2,
+    "工程伦理":1,
+    "高级计算机系统结构":2,
+    "人工智能原理":2,
+    "软件工程形式化方法":2,
+    "计算机图形学":2,
+    "形式语言与自动机理论":2,
+    "数据挖掘":2,
+    "软件建模技术":2,
+    '嵌入式系统原理与设计':2
+}
+def countScores(file):
+
+    data = pd.read_excel(file)
+    data.columns = data.loc[1]
+    print(data.loc[2:10])
+
+    score = 0
+    point = 0
+    # df['TermIndex']=df['TermIndex'].replace([1,2],['一','二'])
+    data.replace({'优':95, '良':85, '中':75, '及格':65}, inplace=True)
+    print(data['成绩'])
+    for i in range(data.shape[0]):
+        if (data.loc[i]['课程性质'] == '学位课'):
+            # print(data.loc[i]['成绩'])
+            score = score + float(data.loc[i]['成绩']) * dic[data.loc[i]['课程名']]
+
+            point = point + dic[data.loc[i]['课程名']]
+
+    print('总成绩为', score)
+    print('总学分为', point)
+    print('加权成绩为', score/point)
+    return file[5:-4], score, point, score/point
+
+filesPath = './cj/'
+IsFiles = []
+for root, dirs, files in os.walk(filesPath):
+    for file in files:
+        if file.endswith('.xls'):
+            IsFiles.append(os.path.join(root, file))
+
+names = []
+print(IsFiles)
+for file in IsFiles:
+    names.append(countScores(file))
+
+all = pd.DataFrame(names, columns=['姓名', '成绩', '学分', '加权成绩'])
+print(all)
+all.to_csv('all.csv', index=False, encoding='gbk')
+
+
+
+
